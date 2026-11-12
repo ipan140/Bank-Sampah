@@ -1,0 +1,73 @@
+# Environment and Secrets (CRITICAL: Never commit .env files)
+.env
+.env.local
+.env.*.local
+*.env
+!.env.example
+
+# Binaries and build outputs
+bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+dist/
+build/
+
+# Go artifacts
+services/core-go/core_server
+services/core-go/core_server.exe
+services/core-go/vendor/
+
+# Python / FastAPI artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+*.onnx
+!services/ai-fastapi/models/waste_yolov8.onnx.example
+
+# Node / Next.js (web-admin)
+node_modules/
+.next/
+out/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Flutter / Mobile
+apps/mobile/.dart_tool/
+apps/mobile/.flutter-plugins
+apps/mobile/.flutter-plugins-dependencies
+apps/mobile/.packages
+apps/mobile/build/
+apps/mobile/android/.gradle
+apps/mobile/android/local.properties
+apps/mobile/ios/.generated/
+apps/mobile/ios/Pods/
+
+# Firmware PlatformIO & ESP32
+firmware/weighbridge-esp32/.pio/
+firmware/weighbridge-esp32/.vscode/
+
+# IDE & Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Logs & Databases
+*.log
+postgres_data/
+redis_data/
+rabbitmq_data/

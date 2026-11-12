@@ -1,0 +1,16 @@
+# Ignore environment and local secrets
+.env
+.env.*
+*.env
+
+# Ignore compiled binaries and OS files
+*.exe
+core_server
+bin/
+vendor/
+
+# Ignore git and editors
+.git
+.gitignore
+.vscode
+.idea

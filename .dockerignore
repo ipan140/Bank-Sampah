@@ -1,0 +1,45 @@
+# Secrets and environment files
+.env
+.env.*
+*.env
+!.env.example
+
+# Git repository
+.git
+.gitignore
+.github
+
+# Documentation & IDE
+.vscode
+.idea
+docs/
+README.md
+
+# Binaries & build outputs
+bin/
+*.exe
+dist/
+build/
+
+# Go artifacts
+services/core-go/core_server
+services/core-go/core_server.exe
+services/core-go/vendor/
+
+# Python artifacts
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.venv
+venv/
+env/
+.pytest_cache/
+
+# Node & Next.js
+node_modules/
+.next/
+
+# Mobile & Firmware
+apps/
+firmware/

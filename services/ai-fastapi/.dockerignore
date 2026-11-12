@@ -1,0 +1,20 @@
+# Ignore environment and local secrets
+.env
+.env.*
+*.env
+
+# Python caches and virtual environments
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.venv
+venv/
+env/
+.pytest_cache/
+
+# Git and editors
+.git
+.gitignore
+.vscode
+.idea

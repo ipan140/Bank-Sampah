@@ -1,0 +1,132 @@
+openapi: 3.0.3
+info:
+  title: Bank Sampah Ecosystem API
+  description: API Contract for Core Go Modular Monolith & AI FastAPI Microservices
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Core Go ERP Service
+  - url: http://localhost:8000/api/v1
+    description: AI FastAPI Microservice
+
+paths:
+  /auth/register:
+    post:
+      summary: Register Nasabah / Kurir / Mitra
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password]
+              properties:
+                name: { type: string, example: "Budi Santoso" }
+                email: { type: string, example: "budi@mail.com" }
+                password: { type: string, example: "rahasia123" }
+                phone: { type: string, example: "08123456789" }
+                role: { type: string, enum: [nasabah, kurir, mitra, admin], default: nasabah }
+                address: { type: string, example: "Jl. Merdeka No. 45" }
+      responses:
+        '201':
+          description: Created
+
+  /auth/login:
+    post:
+      summary: Login to obtain JWT Token
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string }
+                password: { type: string }
+      responses:
+        '200':
+          description: OK
+
+  /wallet:
+    get:
+      summary: Check current wallet balance and reward points
+      tags: [Wallet]
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: OK
+
+  /pickups:
+    post:
+      summary: Schedule waste pickup request
+      tags: [Pickup]
+      security:
+        - BearerAuth: []
+      responses:
+        '201':
+          description: Pickup scheduled
+
+  /weighbridge/tickets:
+    post:
+      summary: Submit digital scale weight ticket & auto-credit wallet
+      tags: [Weighbridge]
+      security:
+        - BearerAuth: []
+      responses:
+        '201':
+          description: Scale ticket created and settled
+
+  /tracking/ping:
+    post:
+      summary: Courier updates live GPS coordinates (Redis Geospatial)
+      tags: [Tracking]
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: OK
+
+  /classify:
+    post:
+      summary: Visual waste image classification (ONNX)
+      tags: [AI Microservice]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Detection labels & confidence
+
+  /routing/optimize:
+    post:
+      summary: Vehicle Routing Problem (OR-Tools) optimization for couriers
+      tags: [AI Microservice]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [depot, pickups]
+      responses:
+        '200':
+          description: Optimized route waypoints & distance
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
