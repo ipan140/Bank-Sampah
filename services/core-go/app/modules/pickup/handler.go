@@ -18,6 +18,16 @@ func NewHandler(service Service) *Handler {
 	return &Handler{service: service}
 }
 
+// CreatePickup godoc
+// @Summary Schedule Waste Pickup
+// @Description Schedule a new waste pickup request for couriers
+// @Tags pickup
+// @Accept json
+// @Produce json
+// @Success 201 {object} PickupRequest
+// @Param request body CreatePickupDTO true "Pickup Payload"
+// @Router /api/v1/pickups [post]
+// @Security BearerAuth
 func (h *Handler) CreatePickup(c echo.Context) error {
 	userIDStr := c.Get("user_id").(string)
 	nasabahID, err := uuid.Parse(userIDStr)

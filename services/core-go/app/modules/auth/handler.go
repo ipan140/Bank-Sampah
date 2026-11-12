@@ -18,6 +18,15 @@ func NewHandler(service Service) *Handler {
 	return &Handler{service: service}
 }
 
+// Register godoc
+// @Summary Register a new User
+// @Description Register a new User (Nasabah, Kurir, Mitra) in the system
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Success 201 {object} AuthResponse
+// @Param request body RegisterRequest true "Payload"
+// @Router /api/v1/auth/register [post]
 func (h *Handler) Register(c echo.Context) error {
 	var req RegisterRequest
 	if err := c.Bind(&req); err != nil {
@@ -36,6 +45,15 @@ func (h *Handler) Register(c echo.Context) error {
 	return response.Success(c, http.StatusCreated, "User registered successfully", res)
 }
 
+// Login godoc
+// @Summary User Login
+// @Description Authenticate user credentials and return JWT bearer token
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Success 200 {object} AuthResponse
+// @Param request body LoginRequest true "Credentials"
+// @Router /api/v1/auth/login [post]
 func (h *Handler) Login(c echo.Context) error {
 	var req LoginRequest
 	if err := c.Bind(&req); err != nil {

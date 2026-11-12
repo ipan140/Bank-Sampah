@@ -18,6 +18,14 @@ func NewHandler(service Service) *Handler {
 	return &Handler{service: service}
 }
 
+// GetWallet godoc
+// @Summary Get Wallet Balance
+// @Description Get current logged-in user wallet balance and reward points
+// @Tags wallet
+// @Produce json
+// @Success 200 {object} Wallet
+// @Router /api/v1/wallet [get]
+// @Security BearerAuth
 func (h *Handler) GetWallet(c echo.Context) error {
 	userIDStr := c.Get("user_id").(string)
 	userID, err := uuid.Parse(userIDStr)
@@ -66,6 +74,16 @@ func (h *Handler) GetHistory(c echo.Context) error {
 	return response.SuccessWithMeta(c, http.StatusOK, "Transactions retrieved", txs, meta)
 }
 
+// RequestRedeem godoc
+// @Summary Request Wallet Redeem
+// @Description Submit a cash withdrawal / e-wallet redeem request
+// @Tags wallet
+// @Accept json
+// @Produce json
+// @Success 201 {object} RedeemRequest
+// @Param request body CreateRedeemDTO true "Redeem Payload"
+// @Router /api/v1/wallet/redeem [post]
+// @Security BearerAuth
 func (h *Handler) RequestRedeem(c echo.Context) error {
 	userIDStr := c.Get("user_id").(string)
 	userID, err := uuid.Parse(userIDStr)

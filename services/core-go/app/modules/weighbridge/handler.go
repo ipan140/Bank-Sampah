@@ -17,6 +17,16 @@ func NewHandler(service Service) *Handler {
 	return &Handler{service: service}
 }
 
+// CreateTicket godoc
+// @Summary Create Scale Ticket
+// @Description Create digital scale ticket from ESP32 or operator and auto-credit wallet
+// @Tags weighbridge
+// @Accept json
+// @Produce json
+// @Success 201 {object} ScaleTicket
+// @Param request body CreateTicketDTO true "Ticket Payload"
+// @Router /api/v1/weighbridge/tickets [post]
+// @Security BearerAuth
 func (h *Handler) CreateTicket(c echo.Context) error {
 	operatorIDStr := c.Get("user_id").(string)
 	operatorID, err := uuid.Parse(operatorIDStr)

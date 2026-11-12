@@ -1,0 +1,120 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: bank_sampah_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres123}
+      POSTGRES_DB: ${DB_NAME:-bank_sampah_db}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-bank_sampah_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - bank_sampah_network
+
+  redis:
+    image: redis:7-alpine
+    container_name: bank_sampah_redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes", "--requirepass", "${REDIS_PASSWORD:-redis123}"]
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-redis123}", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - bank_sampah_network
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: bank_sampah_rabbitmq
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-guest}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-guest}
+    ports:
+      - "${RABBITMQ_PORT:-5672}:5672"
+      - "${RABBITMQ_MGMT_PORT:-15672}:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - bank_sampah_network
+
+  core-go:
+    build:
+      context: ./services/core-go
+      dockerfile: Dockerfile
+    container_name: bank_sampah_core_go
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-8080}:8080"
+    environment:
+      APP_ENV: ${APP_ENV:-development}
+      APP_PORT: 8080
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres123}
+      DB_NAME: ${DB_NAME:-bank_sampah_db}
+      DB_SSLMODE: disable
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-redis123}
+      RABBITMQ_URL: amqp://${RABBITMQ_USER:-guest}:${RABBITMQ_PASSWORD:-guest}@rabbitmq:5672/
+      AI_SERVICE_URL: http://ai-fastapi:8000
+      JWT_SECRET: ${JWT_SECRET:-supersecretbankkeys12345}
+      JWT_EXPIRE_HOURS: 24
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - bank_sampah_network
+
+  ai-fastapi:
+    build:
+      context: ./services/ai-fastapi
+      dockerfile: Dockerfile
+    container_name: bank_sampah_ai_fastapi
+    restart: unless-stopped
+    ports:
+      - "${AI_PORT:-8000}:8000"
+    environment:
+      APP_ENV: ${APP_ENV:-development}
+      APP_PORT: 8000
+      CORE_SERVICE_URL: http://core-go:8080
+      RABBITMQ_URL: amqp://${RABBITMQ_USER:-guest}:${RABBITMQ_PASSWORD:-guest}@rabbitmq:5672/
+    depends_on:
+      - rabbitmq
+    networks:
+      - bank_sampah_network
+
+volumes:
+  postgres_data:
+  redis_data:
+  rabbitmq_data:
+
+networks:
+  bank_sampah_network:
+    driver: bridge

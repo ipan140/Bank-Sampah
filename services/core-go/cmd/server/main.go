@@ -21,12 +21,22 @@ import (
 	"bank-sampah/core-go/common/middleware"
 	"bank-sampah/core-go/config"
 	"bank-sampah/core-go/database/migrations"
+	_ "bank-sampah/core-go/docs"
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	echomiddleware "github.com/labstack/echo/v4/middleware"
+	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
+// @title Bank Sampah Core ERP API
+// @version 1.0.0
+// @description Modular Monolith Backend API with Clean Layered Architecture & Swagger Documentation
+// @host localhost:8080
+// @BasePath /api/v1
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
 func main() {
 	log.Println("==================================================")
 	log.Println("   BANK SAMPAH MODULAR MONOLITH SERVER (CORE-GO)   ")
@@ -73,6 +83,9 @@ func main() {
 			"version":   "1.0.0",
 		})
 	})
+
+	// Swagger UI documentation
+	e.GET("/swagger/*", echoSwagger.WrapHandler)
 
 	apiV1 := e.Group("/api/v1")
 
