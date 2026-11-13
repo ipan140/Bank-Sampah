@@ -1,128 +1,163 @@
 openapi: 3.0.3
 info:
-  title: Bank Sampah Ecosystem API
-  description: API Contract for Core Go Modular Monolith & AI FastAPI Microservices
-  version: 1.0.0
+  title: Bank Sampah Enterprise Ecosystem API
+  description: Comprehensive Modular Monolith & AI Microservice API Contract
+  version: 2.0.0
 
 servers:
   - url: http://localhost:8080/api/v1
-    description: Core Go ERP Service
+    description: Core Go Modular Monolith Server
   - url: http://localhost:8000/api/v1
     description: AI FastAPI Microservice
 
 paths:
+  # ================= AUTH & USER =================
   /auth/register:
     post:
       summary: Register Nasabah / Kurir / Mitra
       tags: [Auth]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [name, email, password]
-              properties:
-                name: { type: string, example: "Budi Santoso" }
-                email: { type: string, example: "budi@mail.com" }
-                password: { type: string, example: "rahasia123" }
-                phone: { type: string, example: "08123456789" }
-                role: { type: string, enum: [nasabah, kurir, mitra, admin], default: nasabah }
-                address: { type: string, example: "Jl. Merdeka No. 45" }
-      responses:
-        '201':
-          description: Created
-
   /auth/login:
     post:
       summary: Login to obtain JWT Token
       tags: [Auth]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [email, password]
-              properties:
-                email: { type: string }
-                password: { type: string }
-      responses:
-        '200':
-          description: OK
+  /member-card/me:
+    get:
+      summary: Get User Digital Member Card & QR Code
+      tags: [Member Card]
+      security: [{BearerAuth: []}]
+  /member-card/scan:
+    post:
+      summary: Scan QR Code for instant weighbridge lookup
+      tags: [Member Card]
+      security: [{BearerAuth: []}]
 
+  # ================= WALLET & PPOB =================
   /wallet:
     get:
       summary: Check current wallet balance and reward points
       tags: [Wallet]
-      security:
-        - BearerAuth: []
-      responses:
-        '200':
-          description: OK
+      security: [{BearerAuth: []}]
+  /wallet/redeem:
+    post:
+      summary: Request cash withdrawal or e-wallet transfer
+      tags: [Wallet]
+      security: [{BearerAuth: []}]
+  /ppob/pay:
+    post:
+      summary: Pay utility bills (PLN Token, Pulsa, BPJS, PDAM, PBB) with waste wallet
+      tags: [PPOB & Fintech]
+      security: [{BearerAuth: []}]
+  /ppob/gold:
+    get:
+      summary: View digital gold savings balance
+      tags: [PPOB & Fintech]
+      security: [{BearerAuth: []}]
+  /ppob/gold/convert:
+    post:
+      summary: Convert waste bank balance into digital gold grams
+      tags: [PPOB & Fintech]
+      security: [{BearerAuth: []}]
+  /ppob/donate:
+    post:
+      summary: Sedekah / Donate waste earnings to orphanages or mosques
+      tags: [PPOB & Fintech]
+      security: [{BearerAuth: []}]
 
+  # ================= PICKUP, TRACKING & DROP POINT =================
   /pickups:
     post:
       summary: Schedule waste pickup request
       tags: [Pickup]
-      security:
-        - BearerAuth: []
-      responses:
-        '201':
-          description: Pickup scheduled
-
-  /weighbridge/tickets:
-    post:
-      summary: Submit digital scale weight ticket & auto-credit wallet
-      tags: [Weighbridge]
-      security:
-        - BearerAuth: []
-      responses:
-        '201':
-          description: Scale ticket created and settled
-
+      security: [{BearerAuth: []}]
   /tracking/ping:
     post:
       summary: Courier updates live GPS coordinates (Redis Geospatial)
       tags: [Tracking]
-      security:
-        - BearerAuth: []
-      responses:
-        '200':
-          description: OK
+      security: [{BearerAuth: []}]
+  /drop-points:
+    get:
+      summary: View nearby drop-off points & smart trash bins
+      tags: [Drop Point]
+  /drop-points/schedules:
+    get:
+      summary: View mobile truck scheduled routes per RT/RW
+      tags: [Drop Point]
 
+  # ================= WEIGHBRIDGE, INVENTORY & B2B =================
+  /weighbridge/tickets:
+    post:
+      summary: Submit digital scale weight ticket & auto-credit wallet
+      tags: [Weighbridge]
+      security: [{BearerAuth: []}]
+  /inventory/stocks:
+    get:
+      summary: Live physical warehouse stock per waste category
+      tags: [Inventory & B2B]
+      security: [{BearerAuth: []}]
+  /inventory/sales:
+    post:
+      summary: Record B2B waste sales to recycling factories (Offtaker)
+      tags: [Inventory & B2B]
+      security: [{BearerAuth: []}]
+  /finance/profit-and-loss:
+    get:
+      summary: View Bank Sampah P&L, gross margin, and operating expenses
+      tags: [Finance Report]
+      security: [{BearerAuth: []}]
+
+  # ================= MARKETPLACE & REWARDS =================
+  /marketplace/products:
+    get:
+      summary: Browse recycled products & organic compost
+      tags: [Eco Marketplace]
+  /marketplace/checkout:
+    post:
+      summary: Buy recycled products by deducting waste wallet balance
+      tags: [Eco Marketplace]
+      security: [{BearerAuth: []}]
+  /rewards:
+    get:
+      summary: Browse rewards catalog
+      tags: [Reward]
+
+  # ================= GAMIFICATION & CSR/COMPLIANCE =================
+  /gamification/leaderboard:
+    get:
+      summary: View leaderboard rankings (RT, RW, Sekolah, Warga)
+      tags: [Gamification]
+  /gamification/my-level:
+    get:
+      summary: View recycling milestone level & badges
+      tags: [Gamification]
+      security: [{BearerAuth: []}]
+  /compliance/certificates:
+    post:
+      summary: Issue official EPR waste recycling compliance certificate
+      tags: [Compliance & EPR]
+      security: [{BearerAuth: []}]
+  /compliance/certificates/verify/{hash}:
+    get:
+      summary: Public verification of issued recycling certificates
+      tags: [Compliance & EPR]
+  /compliance/subscriptions:
+    post:
+      summary: Create recurring scheduled pickup contract for businesses
+      tags: [Compliance & EPR]
+      security: [{BearerAuth: []}]
+
+  # ================= AI MICROSERVICE =================
   /classify:
     post:
       summary: Visual waste image classification (ONNX)
       tags: [AI Microservice]
-      requestBody:
-        required: true
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                file:
-                  type: string
-                  format: binary
-      responses:
-        '200':
-          description: Detection labels & confidence
-
+  /estimate:
+    post:
+      summary: Estimate weight, economic value & CO2 offset
+      tags: [AI Microservice]
   /routing/optimize:
     post:
       summary: Vehicle Routing Problem (OR-Tools) optimization for couriers
       tags: [AI Microservice]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [depot, pickups]
-      responses:
-        '200':
-          description: Optimized route waypoints & distance
 
 components:
   securitySchemes:

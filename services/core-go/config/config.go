@@ -26,11 +26,11 @@ type Config struct {
 func LoadConfig() *Config {
 	return &Config{
 		AppEnv:         getEnv("APP_ENV", "development"),
-		AppPort:        getEnv("APP_PORT", "8080"),
+		AppPort:        getEnv("APP_PORT", "9000"),
 		DBHost:         getEnv("DB_HOST", "localhost"),
 		DBPort:         getEnv("DB_PORT", "5432"),
 		DBUser:         getEnv("DB_USER", "postgres"),
-		DBPassword:     getEnv("DB_PASSWORD", "postgres123"),
+		DBPassword:     getEnv("DB_PASSWORD", "Cebes1234"),
 		DBName:         getEnv("DB_NAME", "bank_sampah_db"),
 		DBSSLMode:      getEnv("DB_SSLMODE", "disable"),
 		RedisHost:      getEnv("REDIS_HOST", "localhost"),
